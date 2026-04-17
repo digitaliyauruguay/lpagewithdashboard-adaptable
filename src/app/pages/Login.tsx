@@ -99,10 +99,7 @@ export default function Login() {
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-offset-0 outline-none transition-all"
-                  style={{ 
-                    focusRing: config.theme.primary 
-                  }}
+                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg outline-none transition-all"
                   onFocus={(e) => {
                     e.target.style.borderColor = config.theme.primary;
                     e.target.style.boxShadow = `0 0 0 3px ${config.theme.primary}20`;
@@ -129,7 +126,7 @@ export default function Login() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-offset-0 outline-none transition-all"
+                  className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg outline-none transition-all"
                   onFocus={(e) => {
                     e.target.style.borderColor = config.theme.primary;
                     e.target.style.boxShadow = `0 0 0 3px ${config.theme.primary}20`;
@@ -170,16 +167,14 @@ export default function Login() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="w-full py-3 rounded-lg text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: config.theme.primary,
-              }}
+              style={{ backgroundColor: config.theme.primary }}
               onMouseEnter={(e) => {
                 if (!loading) {
-                  e.currentTarget.style.backgroundColor = config.theme.primaryHover;
+                  e.currentTarget.style.opacity = '0.9';
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = config.theme.primary;
+                e.currentTarget.style.opacity = '1';
               }}
             >
               {loading ? 'Ingresando...' : 'Ingresar al Dashboard'}

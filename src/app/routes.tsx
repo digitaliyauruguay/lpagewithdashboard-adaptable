@@ -8,6 +8,14 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
+import ExperimentalLanding from './components/ExperimentalLanding.jsx';
+import OptimizedExperimental from './components/OptimizedExperimental.jsx';
+import UltraOptimized from './components/UltraOptimized.jsx';
+import ParadigmShifter from './components/ParadigmShifter.jsx';
+import EnterpriseLanding from './components/EnterpriseLanding.jsx';
+import VetGroomingLanding from './components/VetGroomingLanding.jsx';
+import IntegratedVetGrooming from './components/IntegratedVetGrooming.jsx';
+import ProductionReadyVetGrooming from './components/ProductionReadyVetGrooming.jsx';
 import { isAuthenticated } from '../lib/auth';
 
 // Protected Route Component
@@ -21,7 +29,31 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Landing />,
+    element: <ProductionReadyVetGrooming />,
+  },
+  {
+    path: "/experimental",
+    element: <ExperimentalLanding />,
+  },
+  {
+    path: "/optimized",
+    element: <OptimizedExperimental />,
+  },
+  {
+    path: "/ultra",
+    element: <UltraOptimized />,
+  },
+  {
+    path: "/paradigm",
+    element: <ParadigmShifter />,
+  },
+  {
+    path: "/enterprise",
+    element: <EnterpriseLanding />,
+  },
+  {
+    path: "/vetgrooming",
+    element: <VetGroomingLanding />,
   },
   {
     path: "/login",

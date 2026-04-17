@@ -17,8 +17,8 @@ import { veterinariaPreset } from './presets/veterinaria.js';
 import { peluqueriaPreset } from './presets/peluqueria.js';
 
 // ⚠️ CAMBIAR ESTA LÍNEA PARA ACTIVAR OTRO PRESET
-// export const config = veterinariaPreset;
-export const config = peluqueriaPreset;
+export const config = veterinariaPreset;
+// export const config = peluqueriaPreset;
 
 // ============================================
 // 💡 CÓMO AGREGAR UN NUEVO PRESET:

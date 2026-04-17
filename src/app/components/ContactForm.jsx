@@ -1,67 +1,79 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Phone, Mail, MapPin, Clock, CheckCircle } from 'lucide-react';
+import { Send, Phone, Mail, MapPin, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { config } from '../../config/activePreset.js';
 import { saveLead } from '../../lib/airtable.js';
 import { trackLead } from '../../lib/analytics.js';
 import { toast } from 'sonner';
+import { useContactForm } from '../../hooks/useFormValidation.js';
+import { contactRateLimiter, detectSuspiciousActivity } from '../../lib/validation.js';
 
 export function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    service: '',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    values: formData,
+    errors,
+    touched,
+    isSubmitting,
+    isValid,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    resetForm
+  } = useContactForm();
+  
   const [submitted, setSubmitted] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState(null);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const onSubmit = async (data) => {
+    // Rate limiting check
+    const clientIdentifier = navigator.userAgent + '_' + (window.localStorage.getItem('client_id') || Math.random().toString(36));
+    if (contactRateLimiter.isBlocked(clientIdentifier)) {
+      const resetTime = new Date(contactRateLimiter.getResetTime(clientIdentifier));
+      setRateLimitError(`Demasiados intentos. Intenta nuevamente después de ${resetTime.toLocaleTimeString()}`);
+      return;
+    }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+    // Detectar actividad sospechosa
+    const suspicious = detectSuspiciousActivity(data, navigator.userAgent, 'client');
+    if (suspicious.isSuspicious && suspicious.score >= 2) {
+      toast.error('Actividad sospechosa detectada. Por favor, completa el formulario correctamente.');
+      return;
+    }
 
     try {
-      // Guardar en Airtable
+      // Guardar en Airtable con datos sanitizados
       const result = await saveLead({
-        ...formData,
+        ...data,
         source: 'Website',
       });
 
       if (result.success) {
         // Trackear conversión en analytics
-        trackLead(formData);
+        trackLead(data);
 
         // Mostrar mensaje de éxito
         toast.success(config.contactForm.successMessage);
         setSubmitted(true);
 
-        // Reset form
-        setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          service: '',
-          message: '',
-        });
-
-        // Volver a estado inicial después de 5s
-        setTimeout(() => setSubmitted(false), 5000);
+        // Reset form después de 3 segundos
+        setTimeout(() => {
+          resetForm();
+          setSubmitted(false);
+        }, 3000);
       } else {
-        toast.error(result.message || 'Error al enviar. Intenta por WhatsApp.');
+        toast.error(result.message || 'Error al enviar formulario. Intenta nuevamente.');
       }
     } catch (error) {
-      console.error('Error al enviar formulario:', error);
-      toast.error('Error al enviar. Intenta por WhatsApp.');
-    } finally {
-      setIsSubmitting(false);
+      console.error('Error submitting form:', error);
+      toast.error('Error de conexión. Intenta nuevamente más tarde.');
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const success = await handleSubmit(onSubmit);
+    if (success) {
+      setRateLimitError(null);
     }
   };
 
@@ -100,37 +112,75 @@ export function ContactForm() {
               </motion.div>
             ) : (
               /* Form */
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                {/* Rate limiting error */}
+                {rateLimitError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-50 border border-red-200 rounded-lg p-4"
+                  >
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                      <p className="text-sm text-red-700">{rateLimitError}</p>
+                    </div>
+                  </motion.div>
+                )}
+
                 {config.contactForm.fields.map((field) => {
+                  const hasError = touched[field.name] && errors[field.name];
+                  const isValid = touched[field.name] && !errors[field.name] && formData[field.name];
+
                   if (field.type === 'select') {
                     return (
                       <div key={field.name}>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           {field.label} {field.required && <span className="text-red-500">*</span>}
                         </label>
-                        <select
-                          name={field.name}
-                          value={formData[field.name]}
-                          onChange={handleChange}
-                          required={field.required}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:border-transparent transition-all outline-none"
-                          style={{
-                            '--tw-ring-color': config.theme.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.boxShadow = `0 0 0 2px ${config.theme.primary}40`;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.boxShadow = '';
-                          }}
-                        >
-                          <option value="">Seleccionar...</option>
-                          {field.options.map((option) => (
-                            <option key={option} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="relative">
+                          <select
+                            name={field.name}
+                            value={formData[field.name]}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            required={field.required}
+                            className={`w-full px-4 py-3 rounded-lg border transition-all outline-none appearance-none ${
+                              hasError 
+                                ? 'border-red-300 focus:border-red-500' 
+                                : isValid 
+                                  ? 'border-green-300 focus:border-green-500'
+                                  : 'border-gray-300 focus:border-primary'
+                            }`}
+                            style={{
+                              '--tw-ring-color': hasError ? '#ef4444' : isValid ? '#10b981' : config.theme.primary,
+                            }}
+                          >
+                            <option value="">Seleccionar...</option>
+                            {field.options.map((option) => (
+                              <option key={option} value={option}>
+                                {option}
+                              </option>
+                            ))}
+                          </select>
+                          
+                          {/* Status indicators */}
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            {hasError && <AlertCircle className="w-5 h-5 text-red-500" />}
+                            {isValid && <CheckCircle className="w-5 h-5 text-green-500" />}
+                          </div>
+                        </div>
+                        
+                        {/* Error message */}
+                        {hasError && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-1 text-sm text-red-600 flex items-center gap-1"
+                          >
+                            <AlertCircle className="w-3 h-3" />
+                            {errors[field.name]}
+                          </motion.p>
+                        )}
                       </div>
                     );
                   }
@@ -140,21 +190,51 @@ export function ContactForm() {
                       <div key={field.name}>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           {field.label} {field.required && <span className="text-red-500">*</span>}
+                          {field.name === 'message' && (
+                            <span className="text-xs text-gray-500 ml-2">
+                              ({formData[field.name]?.length || 0}/1000 caracteres)
+                            </span>
+                          )}
                         </label>
-                        <textarea
-                          name={field.name}
-                          value={formData[field.name]}
-                          onChange={handleChange}
-                          required={field.required}
-                          rows={4}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:border-transparent transition-all outline-none resize-none"
-                          onFocus={(e) => {
-                            e.target.style.boxShadow = `0 0 0 2px ${config.theme.primary}40`;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.boxShadow = '';
-                          }}
-                        />
+                        <div className="relative">
+                          <textarea
+                            name={field.name}
+                            value={formData[field.name]}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            required={field.required}
+                            rows={4}
+                            maxLength={field.name === 'message' ? 1000 : undefined}
+                            className={`w-full px-4 py-3 rounded-lg border transition-all outline-none resize-none ${
+                              hasError 
+                                ? 'border-red-300 focus:border-red-500' 
+                                : isValid 
+                                  ? 'border-green-300 focus:border-green-500'
+                                  : 'border-gray-300 focus:border-primary'
+                            }`}
+                            style={{
+                              '--tw-ring-color': hasError ? '#ef4444' : isValid ? '#10b981' : config.theme.primary,
+                            }}
+                          />
+                          
+                          {/* Status indicators */}
+                          <div className="absolute right-3 top-3 pointer-events-none">
+                            {hasError && <AlertCircle className="w-5 h-5 text-red-500" />}
+                            {isValid && <CheckCircle className="w-5 h-5 text-green-500" />}
+                          </div>
+                        </div>
+                        
+                        {/* Error message */}
+                        {hasError && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-1 text-sm text-red-600 flex items-center gap-1"
+                          >
+                            <AlertCircle className="w-3 h-3" />
+                            {errors[field.name]}
+                          </motion.p>
+                        )}
                       </div>
                     );
                   }
@@ -164,20 +244,45 @@ export function ContactForm() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         {field.label} {field.required && <span className="text-red-500">*</span>}
                       </label>
-                      <input
-                        type={field.type}
-                        name={field.name}
-                        value={formData[field.name]}
-                        onChange={handleChange}
-                        required={field.required}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:border-transparent transition-all outline-none"
-                        onFocus={(e) => {
-                          e.target.style.boxShadow = `0 0 0 2px ${config.theme.primary}40`;
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.boxShadow = '';
-                        }}
-                      />
+                      <div className="relative">
+                        <input
+                          type={field.type}
+                          name={field.name}
+                          value={formData[field.name]}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          required={field.required}
+                          className={`w-full px-4 py-3 rounded-lg border transition-all outline-none ${
+                            hasError 
+                              ? 'border-red-300 focus:border-red-500' 
+                              : isValid 
+                                ? 'border-green-300 focus:border-green-500'
+                                : 'border-gray-300 focus:border-primary'
+                          }`}
+                          style={{
+                            '--tw-ring-color': hasError ? '#ef4444' : isValid ? '#10b981' : config.theme.primary,
+                          }}
+                          placeholder={field.placeholder || ''}
+                        />
+                        
+                        {/* Status indicators */}
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                          {hasError && <AlertCircle className="w-5 h-5 text-red-500" />}
+                          {isValid && <CheckCircle className="w-5 h-5 text-green-500" />}
+                        </div>
+                      </div>
+                      
+                      {/* Error message */}
+                      {hasError && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-1 text-sm text-red-600 flex items-center gap-1"
+                        >
+                          <AlertCircle className="w-3 h-3" />
+                          {errors[field.name]}
+                        </motion.p>
+                      )}
                     </div>
                   );
                 })}
