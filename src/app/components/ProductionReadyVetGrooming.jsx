@@ -4,7 +4,8 @@ import {
   PawPrint, Heart, ArrowRight, Stethoscope, ShieldCheck, Activity, 
   UserCheck, Settings, LogOut, Home, Star, Phone, Mail, MapPin,
   Clock, Calendar, CheckCircle, AlertCircle, Zap, TrendingUp,
-  Users, Award, Target, ChevronDown, Menu, X, MessageCircle
+  Users, Award, Target, ChevronDown, Menu, X, MessageCircle,
+  Moon, Sun, Hand
 } from 'lucide-react';
 
 // Importar sistema de autenticación
@@ -108,6 +109,7 @@ export default function ProductionReadyVetGrooming() {
   const [currentSection, setCurrentSection] = useState('inicio');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -122,6 +124,15 @@ export default function ProductionReadyVetGrooming() {
   
   const currentUser = getCurrentUser();
   const { scale, opacity } = useScrollEffects();
+
+  // Aplicar modo oscuro al body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Scroll tracking
   useEffect(() => {
@@ -303,13 +314,21 @@ export default function ProductionReadyVetGrooming() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      darkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900' 
+        : 'bg-gradient-to-br from-gray-50 via-white to-purple-50'
+    }`}>
       {/* Navigation */}
       <motion.header
         style={{ scale, opacity }}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-purple-100 shadow-sm"
+        className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b shadow-sm transition-colors duration-300 ${
+          darkMode 
+            ? 'bg-gray-900/90 border-purple-800' 
+            : 'bg-white/90 border-purple-100'
+        }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -499,7 +518,11 @@ export default function ProductionReadyVetGrooming() {
       </motion.header>
 
       {/* Hero Section */}
-      <section id="inicio" className="relative min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 overflow-hidden">
+      <section id="inicio" className={`relative min-h-screen overflow-hidden transition-colors duration-300 ${
+        darkMode
+          ? 'bg-gradient-to-br from-purple-900 via-gray-800 to-blue-900'
+          : 'bg-gradient-to-br from-purple-50 via-white to-blue-50'
+      }`}>
         {/* Background particles */}
         <BackgroundParticles density={25} />
         
@@ -531,7 +554,11 @@ export default function ProductionReadyVetGrooming() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-sm font-semibold mb-8 border border-purple-200"
+              className={`inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold mb-8 border transition-colors duration-300 ${
+                darkMode
+                  ? 'bg-gradient-to-r from-purple-800 to-blue-800 text-purple-300 border-purple-700'
+                  : 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-purple-200'
+              }`}
             >
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -542,7 +569,9 @@ export default function ProductionReadyVetGrooming() {
             </motion.div>
 
             {/* Título animado */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               <span className="block bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Cuidado Profesional
               </span>
@@ -556,10 +585,12 @@ export default function ProductionReadyVetGrooming() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed"
+              className={`text-xl mb-12 max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+                darkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}
             >
               Servicios veterinarios de excelencia con tecnología avanzada, 
-              <span className="font-semibold text-purple-600"> 15 años de experiencia</span> 
+              <span className={`font-semibold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}> 15 años de experiencia</span> 
               {" "}y un equipo apasionado por el bienestar animal
             </motion.p>
 
@@ -574,19 +605,25 @@ export default function ProductionReadyVetGrooming() {
                 <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   <AnimatedCounter target={5000} suffix="+" />
                 </div>
-                <p className="text-gray-600 mt-2 font-medium">Mascotas Atendidas</p>
+                <p className={`mt-2 font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Mascotas Atendidas</p>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   <AnimatedCounter target={15} suffix="+" />
                 </div>
-                <p className="text-gray-600 mt-2 font-medium">Años de Experiencia</p>
+                <p className={`mt-2 font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Años de Experiencia</p>
               </div>
               <div className="text-center">
                 <div className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   <AnimatedCounter target={98} suffix="%" />
                 </div>
-                <p className="text-gray-600 mt-2 font-medium">Satisfacción</p>
+                <p className={`mt-2 font-medium transition-colors duration-300 ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>Satisfacción</p>
               </div>
             </motion.div>
 
@@ -643,7 +680,9 @@ export default function ProductionReadyVetGrooming() {
       </section>
 
       {/* Services Section */}
-      <section id="servicios" className="py-24 bg-white">
+      <section id="servicios" className={`py-24 transition-colors duration-300 ${
+        darkMode ? 'bg-gray-900' : 'bg-white'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
@@ -661,13 +700,17 @@ export default function ProductionReadyVetGrooming() {
               Nuestros Servicios Premium
             </motion.div>
             
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 Atención Integral
               </span>
               {" "}para tu Mejor Amigo
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+              darkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>
               Ofrecemos servicios veterinarios completos con tecnología de última generación, 
               personal altamente calificado y un enfoque centrado en el bienestar animal
             </p>
@@ -682,7 +725,11 @@ export default function ProductionReadyVetGrooming() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border border-gray-100 cursor-pointer"
+                className={`group rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border cursor-pointer ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700 hover:border-purple-600' 
+                    : 'bg-white border-gray-100'
+                }`}
               >
                 {/* Header con ícono y stats */}
                 <div className="flex items-start justify-between mb-6">
@@ -696,10 +743,14 @@ export default function ProductionReadyVetGrooming() {
                 </div>
                 
                 {/* Contenido */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">
+                <h3 className={`text-2xl font-bold mb-4 group-hover:text-purple-600 transition-colors ${
+                  darkMode ? 'text-white' : 'text-gray-900'
+                }`}>
                   {service.name}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
+                <p className={`mb-6 leading-relaxed ${
+                  darkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>{service.description}</p>
                 
                 {/* Features */}
                 <div className="space-y-3 mb-6">
@@ -712,7 +763,9 @@ export default function ProductionReadyVetGrooming() {
                         transition={{ delay: index * 0.1 + i * 0.05 }}
                         className="w-2 h-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full"
                       />
-                      <span className="text-sm text-gray-700 font-medium">{feature}</span>
+                      <span className={`text-sm font-medium ${
+                        darkMode ? 'text-gray-300' : 'text-gray-700'
+                      }`}>{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -732,7 +785,11 @@ export default function ProductionReadyVetGrooming() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonios" className="py-24 bg-gradient-to-b from-white to-purple-50">
+      <section id="testimonios" className={`py-24 transition-colors duration-300 ${
+        darkMode 
+          ? 'bg-gradient-to-b from-gray-900 to-purple-900' 
+          : 'bg-gradient-to-b from-white to-purple-50'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
@@ -750,13 +807,17 @@ export default function ProductionReadyVetGrooming() {
               Historias de Éxito
             </motion.div>
             
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               Lo que dicen nuestros
               <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 {" "}Clientes Felices
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+              darkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>
               Descubre las experiencias de dueños de mascotas que confían en nosotros para el cuidado de sus seres queridos
             </p>
           </motion.div>
@@ -770,7 +831,11 @@ export default function ProductionReadyVetGrooming() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border border-gray-100 cursor-pointer"
+                className={`rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all border cursor-pointer ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-100'
+                }`}
               >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-6">
@@ -779,16 +844,16 @@ export default function ProductionReadyVetGrooming() {
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-600">{testimonial.role}</div>
+                      <div className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{testimonial.name}</div>
+                      <div className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{testimonial.role}</div>
                       <div className="flex items-center gap-2 mt-1">
                         {testimonial.verified && (
-                          <div className="flex items-center gap-1 text-xs text-green-600">
+                          <div className={`flex items-center gap-1 text-xs ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
                             <CheckCircle className="w-3 h-3" />
                             <span>Verificado</span>
                           </div>
                         )}
-                        <div className="text-xs text-gray-500">{testimonial.date}</div>
+                        <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{testimonial.date}</div>
                       </div>
                     </div>
                   </div>
@@ -808,23 +873,31 @@ export default function ProductionReadyVetGrooming() {
                 </div>
 
                 {/* Content */}
-                <blockquote className="text-gray-700 mb-6 text-lg leading-relaxed">
+                <blockquote className={`mb-6 text-lg leading-relaxed ${
+                  darkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   "{testimonial.content}"
                 </blockquote>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+                <div className={`flex items-center justify-between pt-6 border-t ${
+                  darkMode ? 'border-gray-700' : 'border-gray-100'
+                }`}>
                   <div className="flex gap-2">
                     {testimonial.images.map((img, i) => (
-                      <div key={i} className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <PawPrint className="w-4 h-4 text-purple-600" />
+                      <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        darkMode ? 'bg-purple-800' : 'bg-purple-100'
+                      }`}>
+                        <PawPrint className={`w-4 h-4 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
                       </div>
                     ))}
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="text-purple-600 hover:text-purple-700 transition-colors"
+                    className={`transition-colors ${
+                      darkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+                    }`}
                   >
                     <Heart className="w-5 h-5" />
                   </motion.button>
@@ -1165,6 +1238,29 @@ export default function ProductionReadyVetGrooming() {
       <motion.div
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
+        className="fixed bottom-8 left-8 z-40 flex flex-col gap-4"
+      >
+        <motion.button
+          whileHover={{ scale: 1.1, rotate: 15 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setDarkMode(!darkMode)}
+          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all ${
+            darkMode 
+              ? 'bg-gradient-to-br from-yellow-400 to-orange-500 hover:shadow-yellow-500/50' 
+              : 'bg-gradient-to-br from-gray-800 to-gray-900 hover:shadow-gray-700/50'
+          }`}
+        >
+          {darkMode ? (
+            <Sun className="w-6 h-6 text-white" />
+          ) : (
+            <Moon className="w-6 h-6 text-white" />
+          )}
+        </motion.button>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
         className="fixed bottom-8 right-8 z-40 flex flex-col gap-4"
       >
         <motion.a
@@ -1184,7 +1280,18 @@ export default function ProductionReadyVetGrooming() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-purple-500/50 transition-all"
         >
-          <Home className="w-6 h-6 text-white" />
+          <motion.div
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+            className="relative"
+          >
+            <Hand className="w-6 h-6 text-white" />
+            <motion.div
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full"
+            />
+          </motion.div>
         </motion.button>
       </motion.div>
     </div>
