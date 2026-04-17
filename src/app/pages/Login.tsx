@@ -5,6 +5,7 @@ import { Lock, Mail, Eye, EyeOff, ArrowLeft, Moon, Sun } from 'lucide-react';
 import { login, isAuthenticated } from '../../lib/auth';
 import { config } from '../../config/activePreset';
 import { toast } from 'sonner';
+import { useDarkMode } from '../../hooks/useDarkMode.js';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,16 +15,7 @@ export default function Login() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Aplicar modo oscuro al body
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [darkMode]);
+  const { darkMode, setDarkMode, toggleDarkMode } = useDarkMode();
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -240,7 +232,7 @@ export default function Login() {
         <motion.button
           whileHover={{ scale: 1.1, rotate: 15 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={toggleDarkMode}
           className={`absolute top-6 right-6 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all ${
             darkMode 
               ? 'bg-gradient-to-br from-yellow-400 to-orange-500 hover:shadow-yellow-500/50' 

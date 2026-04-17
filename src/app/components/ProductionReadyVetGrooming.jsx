@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView, useScroll, useTransform } from 'framer-motion';
+import { useDarkMode } from '../../hooks/useDarkMode.js';
 import { 
-  PawPrint, Heart, ArrowRight, Stethoscope, ShieldCheck, Activity, 
+  PawPrint, Heart, Stethoscope, ShieldCheck, Activity, 
   UserCheck, Settings, LogOut, Home, Star, Phone, Mail, MapPin,
   Clock, Calendar, CheckCircle, AlertCircle, Zap, TrendingUp,
   Users, Award, Target, ChevronDown, Menu, X, MessageCircle,
@@ -123,7 +124,7 @@ export default function ProductionReadyVetGrooming() {
   const [currentSection, setCurrentSection] = useState('inicio');
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { darkMode, setDarkMode, toggleDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -138,15 +139,6 @@ export default function ProductionReadyVetGrooming() {
   
   const currentUser = getCurrentUser();
   const { scale, opacity } = useScrollEffects();
-
-  // Aplicar modo oscuro al body
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   // Scroll tracking optimizado con debounce
   useEffect(() => {
@@ -388,7 +380,9 @@ export default function ProductionReadyVetGrooming() {
                   className={`text-sm font-semibold transition-all cursor-pointer relative ${
                     currentSection === section 
                       ? 'text-purple-600' 
-                      : 'text-gray-700 hover:text-purple-600'
+                      : darkMode
+                        ? 'text-gray-300 hover:text-purple-400'
+                        : 'text-gray-700 hover:text-purple-600'
                   }`}
                 >
                   {section.charAt(0).toUpperCase() + section.slice(1)}
@@ -410,7 +404,7 @@ export default function ProductionReadyVetGrooming() {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/25"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/25 cursor-pointer"
                   >
                     <UserCheck className="w-4 h-4" />
                     <span className="hidden sm:inline text-sm font-medium">{currentUser}</span>
@@ -423,34 +417,76 @@ export default function ProductionReadyVetGrooming() {
                         initial={{ opacity: 0, y: -10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-purple-100 py-2 z-50"
+                        className={`absolute right-0 mt-2 w-56 rounded-xl shadow-2xl border py-2 z-50 transition-colors duration-300 ${
+                          darkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-purple-100'
+                        }`}
                       >
                         <a
                           href="/dashboard"
-                          className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-purple-50 transition-colors"
+                          className={`flex items-center gap-3 px-4 py-3 transition-colors cursor-pointer ${
+                            darkMode 
+                              ? 'text-gray-300 hover:bg-gray-700' 
+                              : 'text-gray-700 hover:bg-purple-50'
+                          }`}
                         >
-                          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <Settings className="w-4 h-4 text-purple-600" />
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-300 ${
+                            darkMode 
+                              ? 'bg-purple-900' 
+                              : 'bg-purple-100'
+                          }`}>
+                            <Settings className={`w-4 h-4 transition-colors duration-300 ${
+                              darkMode ? 'text-purple-300' : 'text-purple-600'
+                            }`} />
                           </div>
                           <div>
-                            <div className="font-medium">Dashboard</div>
-                            <div className="text-xs text-gray-500">Ver métricas y leads</div>
+                            <div className={`font-medium transition-colors duration-300 ${
+                              darkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
+                              Dashboard
+                            </div>
+                            <div className={`text-xs transition-colors duration-300 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                              Ver métricas y leads
+                            </div>
                           </div>
                         </a>
-                        <div className="border-t border-purple-100 my-1" />
+                        <div className={`border-t my-1 transition-colors duration-300 ${
+                          darkMode ? 'border-gray-700' : 'border-purple-100'
+                        }`} />
                         <button
                           onClick={() => {
                             logout();
                             window.location.href = '/';
                           }}
-                          className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                          className={`flex items-center gap-3 px-4 py-3 transition-colors w-full text-left cursor-pointer ${
+                            darkMode 
+                              ? 'text-red-400 hover:bg-red-900/20' 
+                              : 'text-red-600 hover:bg-red-50'
+                          }`}
                         >
-                          <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                            <LogOut className="w-4 h-4" />
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-300 ${
+                            darkMode 
+                              ? 'bg-red-900/50' 
+                              : 'bg-red-100'
+                          }`}>
+                            <LogOut className={`w-4 h-4 transition-colors duration-300 ${
+                              darkMode ? 'text-red-400' : 'text-red-600'
+                            }`} />
                           </div>
                           <div>
-                            <div className="font-medium">Cerrar sesión</div>
-                            <div className="text-xs text-gray-500">Salir del sistema</div>
+                            <div className={`font-medium transition-colors duration-300 ${
+                              darkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
+                              Cerrar sesión
+                            </div>
+                            <div className={`text-xs transition-colors duration-300 ${
+                              darkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                              Salir del sistema
+                            </div>
                           </div>
                         </button>
                       </motion.div>
@@ -460,7 +496,7 @@ export default function ProductionReadyVetGrooming() {
               ) : (
                 <a
                   href="/login"
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/25"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-purple-500/25 cursor-pointer"
                 >
                   <UserCheck className="w-4 h-4" />
                   <span className="hidden sm:inline text-sm font-medium">Admin</span>
@@ -524,9 +560,10 @@ export default function ProductionReadyVetGrooming() {
                       <button
                         onClick={() => {
                           logout();
+                          toast.success('Sesión cerrada correctamente');
                           window.location.href = '/';
                         }}
-                        className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                        className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium cursor-pointer"
                       >
                         Cerrar sesión
                       </button>
@@ -660,12 +697,12 @@ export default function ProductionReadyVetGrooming() {
                 whileHover={{ scale: 1.05, y: -3, boxShadow: "0 20px 40px rgba(147, 51, 234, 0.3)" }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full shadow-xl hover:shadow-purple-500/50 transition-all"
+                className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-full shadow-xl hover:shadow-purple-500/50 transition-all cursor-pointer"
               >
                 <span className="flex items-center gap-3">
                   <Heart className="w-5 h-5" />
                   Agendar Cita Ahora
-                  <ArrowRight className="w-5 h-5" />
+                  <Hand className="w-5 h-5" />
                 </span>
               </motion.button>
 
@@ -673,7 +710,7 @@ export default function ProductionReadyVetGrooming() {
                 whileHover={{ scale: 1.05, y: -3 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth' })}
-                className={`px-8 py-4 font-bold rounded-full border-2 transition-all shadow-lg ${
+                className={`px-8 py-4 font-bold rounded-full border-2 transition-all shadow-lg cursor-pointer ${
                   darkMode
                     ? 'bg-gray-800 text-white border-gray-600 hover:border-purple-400 hover:bg-gray-700'
                     : 'bg-white text-gray-900 border-gray-300 hover:border-purple-600'
@@ -682,6 +719,7 @@ export default function ProductionReadyVetGrooming() {
                 <span className="flex items-center gap-3">
                   <Stethoscope className="w-5 h-5" />
                   Ver Servicios
+                  <Hand className="w-5 h-5" />
                 </span>
               </motion.button>
             </motion.div>
@@ -693,13 +731,18 @@ export default function ProductionReadyVetGrooming() {
               transition={{ delay: 1.5 }}
               className="flex justify-center mt-16"
             >
-              <motion.div
+              <motion.button
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="text-purple-400"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth' })}
+                className={`p-3 rounded-full transition-colors cursor-pointer ${
+                  darkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+                }`}
               >
                 <ChevronDown className="w-6 h-6" />
-              </motion.div>
+              </motion.button>
             </motion.div>
           </motion.div>
         </div>
@@ -720,7 +763,11 @@ export default function ProductionReadyVetGrooming() {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-6"
+              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold mb-6 transition-colors duration-300 ${
+                darkMode
+                  ? 'bg-purple-800 text-purple-300'
+                  : 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200'
+              }`}
             >
               <Star className="w-4 h-4 mr-2" />
               Nuestros Servicios Premium
@@ -802,7 +849,7 @@ export default function ProductionReadyVetGrooming() {
                   onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
                   className="flex items-center gap-2 text-purple-600 font-bold hover:text-purple-700 transition-colors"
                 >
-                  Agendar <ArrowRight className="w-5 h-5" />
+                  Agendar <Hand className="w-5 h-5" />
                 </motion.button>
               </motion.div>
             ))}
@@ -813,8 +860,8 @@ export default function ProductionReadyVetGrooming() {
       {/* Testimonials Section */}
       <section id="testimonios" className={`py-24 transition-colors duration-300 ${
         darkMode 
-          ? 'bg-gradient-to-b from-gray-900 to-purple-900' 
-          : 'bg-gradient-to-b from-white to-purple-50'
+          ? 'bg-gradient-to-b from-gray-900 via-purple-800 to-purple-900' 
+          : 'bg-gradient-to-b from-white via-purple-50 to-purple-100'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -827,7 +874,11 @@ export default function ProductionReadyVetGrooming() {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-6"
+              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold mb-6 transition-colors duration-300 ${
+                darkMode
+                  ? 'bg-purple-800 text-purple-300'
+                  : 'bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border border-purple-200'
+              }`}
             >
               <Heart className="w-4 h-4 mr-2" />
               Historias de Éxito
@@ -935,7 +986,11 @@ export default function ProductionReadyVetGrooming() {
       </section>
 
       {/* Contact Section */}
-      <section id="contacto" className="py-24 bg-gradient-to-br from-purple-900 via-blue-900 to-purple-900">
+      <section id="contacto" className={`py-24 transition-colors duration-300 ${
+        darkMode
+          ? 'bg-gradient-to-br from-purple-900 via-purple-800 to-blue-900'
+          : 'bg-gradient-to-br from-purple-100 via-purple-200 to-blue-100'
+      }`}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
@@ -947,19 +1002,27 @@ export default function ProductionReadyVetGrooming() {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="inline-flex items-center px-4 py-2 bg-white/20 text-white rounded-full text-sm font-semibold mb-6 backdrop-blur-sm border border-white/30"
+              className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm border transition-colors duration-300 ${
+                darkMode
+                  ? 'bg-white/20 text-white border-white/30'
+                  : 'bg-purple-100 text-purple-700 border-purple-200'
+              }`}
             >
               <Calendar className="w-4 h-4 mr-2" />
               Agenda tu Cita
             </motion.div>
             
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-6 transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               Comienza el Cuidado
               <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
                 {" "}de tu Mascota Hoy
               </span>
             </h2>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+            <p className={`text-xl max-w-3xl mx-auto leading-relaxed transition-colors duration-300 ${
+              darkMode ? 'text-white/90' : 'text-gray-600'
+            }`}>
               Completa el formulario y nos contactaremos en menos de 1 hora para confirmar tu cita
             </p>
           </motion.div>
@@ -969,7 +1032,11 @@ export default function ProductionReadyVetGrooming() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 sm:p-12 border border-white/20 shadow-2xl"
+            className={`backdrop-blur-xl rounded-3xl p-8 sm:p-12 shadow-2xl transition-colors duration-300 ${
+              darkMode 
+                ? 'bg-white/10 border border-white/20' 
+                : 'bg-white border-2 border-gray-900'
+            }`}
           >
             {isSubmitted ? (
               <motion.div
@@ -1000,7 +1067,9 @@ export default function ProductionReadyVetGrooming() {
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
+                    <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-700'
+                    }`}>
                       <UserCheck className="w-4 h-4" />
                       Nombre completo
                     </label>
@@ -1009,11 +1078,11 @@ export default function ProductionReadyVetGrooming() {
                       required
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      className={`w-full px-4 py-4 bg-white/20 border rounded-xl text-white placeholder-white/60 outline-none transition-all backdrop-blur-sm ${
-                        formErrors.name 
-                          ? 'border-red-400 focus:border-red-400 bg-red-400/10' 
-                          : 'border-white/30 focus:border-white/60 focus:bg-white/25'
-                      }`}
+                      className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm ${
+                        darkMode 
+                          ? 'bg-white/20 text-white placeholder-white/60 border-white/30 focus:border-white/60 focus:bg-white/25'
+                          : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                      }${formErrors.name ? ' border-red-400 focus:border-red-400' : ''}`}
                       placeholder="Tu nombre completo"
                     />
                     {formErrors.name && (
@@ -1028,7 +1097,9 @@ export default function ProductionReadyVetGrooming() {
                     )}
                   </div>
                   <div>
-                    <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
+                    <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-700'
+                    }`}>
                       <Mail className="w-4 h-4" />
                       Email
                     </label>
@@ -1037,11 +1108,11 @@ export default function ProductionReadyVetGrooming() {
                       required
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className={`w-full px-4 py-4 bg-white/20 border rounded-xl text-white placeholder-white/60 outline-none transition-all backdrop-blur-sm ${
-                        formErrors.email 
-                          ? 'border-red-400 focus:border-red-400 bg-red-400/10' 
-                          : 'border-white/30 focus:border-white/60 focus:bg-white/25'
-                      }`}
+                      className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm ${
+                        darkMode 
+                          ? 'bg-white/20 text-white placeholder-white/60 border-white/30 focus:border-white/60 focus:bg-white/25'
+                          : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                      }${formErrors.email ? ' border-red-400 focus:border-red-400' : ''}`}
                       placeholder="tu@email.com"
                     />
                     {formErrors.email && (
@@ -1059,7 +1130,9 @@ export default function ProductionReadyVetGrooming() {
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
+                    <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-700'
+                    }`}>
                       <Phone className="w-4 h-4" />
                       Teléfono (opcional)
                     </label>
@@ -1067,12 +1140,18 @@ export default function ProductionReadyVetGrooming() {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className="w-full px-4 py-4 bg-white/20 border border-white/30 rounded-xl text-white placeholder-white/60 outline-none focus:border-white/60 focus:bg-white/25 transition-all backdrop-blur-sm"
+                      className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm ${
+                        darkMode 
+                          ? 'bg-white/20 text-white placeholder-white/60 border-white/30 focus:border-white/60 focus:bg-white/25'
+                          : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                      }`}
                       placeholder="+54 9 11 1234-5678"
                     />
                   </div>
                   <div>
-                    <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
+                    <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-700'
+                    }`}>
                       <Heart className="w-4 h-4" />
                       Nombre de tu mascota
                     </label>
@@ -1081,11 +1160,11 @@ export default function ProductionReadyVetGrooming() {
                       required
                       value={formData.petName}
                       onChange={(e) => handleInputChange('petName', e.target.value)}
-                      className={`w-full px-4 py-4 bg-white/20 border rounded-xl text-white placeholder-white/60 outline-none transition-all backdrop-blur-sm ${
-                        formErrors.petName 
-                          ? 'border-red-400 focus:border-red-400 bg-red-400/10' 
-                          : 'border-white/30 focus:border-white/60 focus:bg-white/25'
-                      }`}
+                      className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm ${
+                        darkMode 
+                          ? 'bg-white/20 text-white placeholder-white/60 border-white/30 focus:border-white/60 focus:bg-white/25'
+                          : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                      }${formErrors.petName ? ' border-red-400 focus:border-red-400' : ''}`}
                       placeholder="Nombre de tu mascota"
                     />
                     {formErrors.petName && (
@@ -1102,19 +1181,21 @@ export default function ProductionReadyVetGrooming() {
                 </div>
                 
                 <div>
-                  <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
-                    <Stethoscope className="w-4 h-4" />
-                    Servicio de interés
-                  </label>
+                  <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      <Stethoscope className="w-4 h-4" />
+                      Servicio de interés
+                    </label>
                   <select
                     required
                     value={formData.service}
                     onChange={(e) => handleInputChange('service', e.target.value)}
-                    className={`w-full px-4 py-4 bg-white/20 border rounded-xl text-white outline-none transition-all backdrop-blur-sm ${
-                      formErrors.service 
-                        ? 'border-red-400 focus:border-red-400 bg-red-400/10' 
-                        : 'border-white/30 focus:border-white/60 focus:bg-white/25'
-                    }`}
+                    className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm ${
+                      darkMode 
+                        ? 'bg-white/20 text-white border-white/30 focus:border-white/60 focus:bg-white/25'
+                        : 'bg-white text-gray-900 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                    }${formErrors.service ? ' border-red-400 focus:border-red-400' : ''}`}
                   >
                     <option value="" className="bg-purple-900">Selecciona un servicio</option>
                     {services.map(service => (
@@ -1136,20 +1217,22 @@ export default function ProductionReadyVetGrooming() {
                 </div>
                 
                 <div>
-                  <label className="block text-white text-sm font-semibold mb-3 flex items-center gap-2">
-                    <MessageCircle className="w-4 h-4" />
-                    Mensaje
-                  </label>
+                  <label className={`block text-sm font-semibold mb-3 flex items-center gap-2 transition-colors duration-300 ${
+                      darkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      <MessageCircle className="w-4 h-4" />
+                      Mensaje
+                    </label>
                   <textarea
                     required
                     rows={4}
                     value={formData.message}
                     onChange={(e) => handleInputChange('message', e.target.value)}
-                    className={`w-full px-4 py-4 bg-white/20 border rounded-xl text-white placeholder-white/60 outline-none transition-all backdrop-blur-sm resize-none ${
-                      formErrors.message 
-                        ? 'border-red-400 focus:border-red-400 bg-red-400/10' 
-                        : 'border-white/30 focus:border-white/60 focus:bg-white/25'
-                    }`}
+                    className={`w-full px-4 py-4 border rounded-xl outline-none transition-all backdrop-blur-sm resize-none ${
+                      darkMode 
+                        ? 'bg-white/20 text-white placeholder-white/60 border-white/30 focus:border-white/60 focus:bg-white/25'
+                        : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200'
+                    }${formErrors.message ? ' border-red-400 focus:border-red-400' : ''}`}
                     placeholder="Cuéntanos sobre tu mascota y lo que necesitas..."
                   />
                   {formErrors.message && (
@@ -1189,7 +1272,7 @@ export default function ProductionReadyVetGrooming() {
                       <>
                         <Heart className="w-5 h-5" />
                         Agendar Cita
-                        <ArrowRight className="w-5 h-5" />
+                        <Hand className="w-5 h-5" />
                       </>
                     )}
                   </span>
@@ -1269,8 +1352,8 @@ export default function ProductionReadyVetGrooming() {
         <motion.button
           whileHover={{ scale: 1.1, rotate: 15 }}
           whileTap={{ scale: 0.9 }}
-          onClick={() => setDarkMode(!darkMode)}
-          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all ${
+          onClick={toggleDarkMode}
+          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all cursor-pointer ${
             darkMode 
               ? 'bg-gradient-to-br from-yellow-400 to-orange-500 hover:shadow-yellow-500/50' 
               : 'bg-gradient-to-br from-gray-800 to-gray-900 hover:shadow-gray-700/50'
@@ -1304,7 +1387,7 @@ export default function ProductionReadyVetGrooming() {
           whileHover={{ scale: 1.1, rotate: -15 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-purple-500/50 transition-all"
+          className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl hover:shadow-purple-500/50 transition-all cursor-pointer"
         >
           <motion.div
             animate={{ y: [0, -3, 0] }}
