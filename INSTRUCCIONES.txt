@@ -1,0 +1,217 @@
+========================================
+🚀 SISTEMA DE LANDING PAGES QUE VENDEN
+========================================
+
+📖 INICIO RÁPIDO (5 MINUTOS):
+
+1. Instalar dependencias:
+   npm install
+
+2. Iniciar servidor de desarrollo:
+   npm run dev
+
+3. Abrir navegador:
+   http://localhost:5173
+
+✅ YA FUNCIONA con datos de ejemplo!
+
+========================================
+
+🎨 CAMBIAR DE PRESET/RUBRO:
+
+Editar: /src/config/activePreset.js
+
+Opción 1 - VETERINARIA (verde):
+export const config = veterinariaPreset;
+
+Opción 2 - PELUQUERÍA (rosa):
+export const config = peluqueriaPreset;
+
+Guardar → la página se adapta automáticamente
+
+========================================
+
+🔐 ACCESO AL DASHBOARD:
+
+URL: http://localhost:5173/login
+
+VETERINARIA:
+- Usuario: admin@vetcare.com
+- Password: vetcare2024
+
+PELUQUERÍA:
+- Usuario: admin@bellastyle.com
+- Password: bella2024
+
+========================================
+
+📊 CONFIGURAR AIRTABLE (Producción):
+
+1. Ver guía completa en: SETUP_AIRTABLE.md
+
+2. Quick steps:
+   - Crear cuenta en Airtable
+   - Crear base y tabla "Leads"
+   - Obtener Base ID y API Key
+   - Pegar en preset (sección airtable)
+   - Cambiar USE_MOCK = false en /src/lib/airtable.js
+
+========================================
+
+📁 ARCHIVOS CLAVE:
+
+📝 DOCUMENTACIÓN:
+- README_COMPLETO.md → Guía técnica completa
+- GUIA_RAPIDA.md → Para comenzar rápido
+- SETUP_AIRTABLE.md → Configurar Airtable paso a paso
+
+⚙️ CONFIGURACIÓN:
+- /src/config/activePreset.js → ⭐ CAMBIAR PRESET ACÁ
+- /src/config/presets/veterinaria.js → Config veterinaria
+- /src/config/presets/peluqueria.js → Config peluquería
+
+🔧 SERVICIOS:
+- /src/lib/airtable.js → Integración Airtable
+- /src/lib/analytics.js → Google Analytics + Meta Pixel
+- /src/lib/auth.js → Autenticación dashboard
+- /src/lib/deviceDetection.js → Optimización animaciones
+
+========================================
+
+🎯 ESTRUCTURA DE PRESETS:
+
+Cada preset contiene TODO:
+✅ Nombre del negocio
+✅ Colores del tema
+✅ Textos (hero, servicios, FAQ, etc)
+✅ Datos de contacto (teléfono, email, dirección)
+✅ Credenciales de admin
+✅ Configuración de Airtable
+✅ IDs de Analytics (GA + Meta Pixel)
+✅ Redes sociales
+✅ SEO (title, description, keywords)
+
+→ CAMBIAR PRESET = CAMBIAR NEGOCIO COMPLETO
+
+========================================
+
+🆕 CREAR NUEVO PRESET:
+
+1. Copiar archivo existente:
+   cp src/config/presets/veterinaria.js src/config/presets/mi-rubro.js
+
+2. Editar todos los valores en mi-rubro.js
+
+3. Importar en activePreset.js:
+   import { miRubroPreset } from './presets/mi-rubro.js';
+
+4. Activar:
+   export const config = miRubroPreset;
+
+========================================
+
+🌐 DEPLOY A PRODUCCIÓN:
+
+VERCEL (Recomendado):
+
+1. Push a GitHub:
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin tu-repo
+   git push -u origin main
+
+2. En Vercel:
+   - Importar repo de GitHub
+   - Deploy automático
+
+3. Obtener URL: tu-proyecto.vercel.app
+
+========================================
+
+✅ CHECKLIST PRE-DEPLOY:
+
+Antes de deployar para cliente:
+
+□ Preset del cliente creado
+□ Colores personalizados
+□ Textos actualizados
+□ Servicios correctos
+□ FAQ relevantes
+□ Credenciales de admin cambiadas
+□ Airtable configurado
+□ USE_MOCK = false
+□ Google Analytics ID
+□ Meta Pixel ID
+□ Datos de contacto correctos
+□ Probado en mobile y desktop
+
+========================================
+
+🆘 PROBLEMAS COMUNES:
+
+❌ "No guarda leads"
+→ Verificar USE_MOCK = false en /src/lib/airtable.js
+→ Verificar credenciales en preset
+
+❌ "No puedo logearme"
+→ Ver credenciales en config.admin del preset activo
+→ Limpiar localStorage del navegador
+
+❌ "Carousel no funciona"
+→ Verificar que slick-carousel esté instalado
+→ Refrescar navegador
+
+========================================
+
+💡 TIPS PARA VENDER:
+
+1. DEMO:
+   - Mostrar landing funcionando
+   - Cambiar preset en vivo (veterinaria → peluquería)
+   - Mostrar dashboard con métricas
+
+2. PROPUESTA DE VALOR:
+   ✅ Landing optimizada para conversión
+   ✅ Sistema de captura de leads automático
+   ✅ Dashboard de análisis en tiempo real
+   ✅ Integración con Airtable (CRM gratis)
+   ✅ Responsive mobile/tablet/desktop
+   ✅ SEO optimizado
+   ✅ Analytics configurados (GA + Meta)
+   ✅ Hosting incluido (Vercel gratis)
+
+3. PRECIO SUGERIDO:
+   - Setup inicial: $XXX USD
+   - Mantenimiento mensual: $XX USD
+   - Extras: Analytics, dominios, etc
+
+========================================
+
+📞 SOPORTE TÉCNICO:
+
+Para problemas:
+1. Revisar consola del navegador (F12)
+2. Ver documentación completa (README_COMPLETO.md)
+3. Verificar configuración del preset
+4. Verificar que todas las deps estén instaladas
+
+========================================
+
+🎉 ¡ÉXITO!
+
+Ya tenés todo listo para:
+✅ Crear landings en minutos
+✅ Capturar leads automáticamente
+✅ Vender a múltiples clientes
+✅ Escalar sin límites
+
+Siguiente paso:
+→ Crear más presets de otros rubros
+→ Configurar Airtable
+→ Deploy en Vercel
+→ ¡Empezar a vender!
+
+========================================
+
+Made with ❤️ for conversion
