@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { Lock, Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff, ArrowLeft, Moon, Sun } from 'lucide-react';
 import { login, isAuthenticated } from '../../lib/auth';
 import { config } from '../../config/activePreset';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,6 +14,16 @@ export default function Login() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Aplicar modo oscuro al body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -44,11 +53,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
+      darkMode
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900'
+        : 'bg-gradient-to-br from-gray-50 to-gray-100'
+    }`}>
       {/* Back to Home */}
       <Link
         to="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+        className={`absolute top-6 left-6 flex items-center gap-2 transition-colors ${
+          darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+        }`}
       >
         <ArrowLeft className="size-4" />
         <span>Volver al sitio</span>
@@ -61,7 +76,9 @@ export default function Login() {
         className="w-full max-w-md"
       >
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className={`rounded-2xl shadow-xl p-8 border transition-colors duration-300 ${
+          darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+        }`}>
           {/* Logo / Brand */}
           <div className="text-center mb-8">
             <motion.div
@@ -76,10 +93,14 @@ export default function Login() {
                 style={{ color: config.theme.primary }}
               />
             </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className={`text-2xl font-bold transition-colors duration-300 ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>
               Panel de Administración
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className={`mt-2 transition-colors duration-300 ${
+              darkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>
               {config.businessName}
             </p>
           </div>
@@ -88,24 +109,32 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Usuario
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+                <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 size-5 transition-colors duration-300 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-400'
+                }`} />
                 <input
                   id="username"
                   type="text"
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg outline-none transition-all"
+                  className={`w-full pl-11 pr-4 py-3 border rounded-lg outline-none transition-all ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
                   onFocus={(e) => {
                     e.target.style.borderColor = config.theme.primary;
                     e.target.style.boxShadow = `0 0 0 3px ${config.theme.primary}20`;
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.borderColor = darkMode ? '#4B5563' : '#d1d5db';
                     e.target.style.boxShadow = 'none';
                   }}
                   placeholder="admin@example.com"
@@ -115,32 +144,42 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
+                darkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+                <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 size-5 transition-colors duration-300 ${
+                  darkMode ? 'text-gray-400' : 'text-gray-400'
+                }`} />
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-11 pr-12 py-3 border border-gray-300 rounded-lg outline-none transition-all"
+                  className={`w-full pl-11 pr-12 py-3 border rounded-lg outline-none transition-all ${
+                    darkMode
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
                   onFocus={(e) => {
                     e.target.style.borderColor = config.theme.primary;
                     e.target.style.boxShadow = `0 0 0 3px ${config.theme.primary}20`;
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.borderColor = darkMode ? '#4B5563' : '#d1d5db';
                     e.target.style.boxShadow = 'none';
                   }}
-                  placeholder="••••••••"
+                  placeholder="&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-300 ${
+                    darkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'
+                  }`}
                 >
                   {showPassword ? (
                     <EyeOff className="size-5" />
@@ -152,11 +191,19 @@ export default function Login() {
             </div>
 
             {/* Hint for demo */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <p className="text-xs text-gray-600 text-center">
-                💡 <strong>Credenciales de prueba:</strong><br />
-                Usuario: <code className="bg-white px-1.5 py-0.5 rounded">{config.admin.username}</code><br />
-                Contraseña: <code className="bg-white px-1.5 py-0.5 rounded">{config.admin.password}</code>
+            <div className={`border rounded-lg p-3 transition-colors duration-300 ${
+              darkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+            }`}>
+              <p className={`text-xs text-center transition-colors duration-300 ${
+                darkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                &#x1F4A1; <strong>Credenciales de prueba:</strong><br />
+                Usuario: <code className={`px-1.5 py-0.5 rounded ${
+                  darkMode ? 'bg-gray-600' : 'bg-white'
+                }`}>{config.admin.username}</code><br />
+                Contraseña: <code className={`px-1.5 py-0.5 rounded ${
+                  darkMode ? 'bg-gray-600' : 'bg-white'
+                }`}>{config.admin.password}</code>
               </p>
             </div>
 
@@ -182,20 +229,46 @@ export default function Login() {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            ⚠️ Área restringida solo para administradores
+          <p className={`text-center text-sm mt-6 transition-colors duration-300 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            &#x26A0; &#xC1;rea restringida solo para administradores
           </p>
         </div>
+
+        {/* Dark Mode Toggle */}
+        <motion.button
+          whileHover={{ scale: 1.1, rotate: 15 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setDarkMode(!darkMode)}
+          className={`absolute top-6 right-6 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all ${
+            darkMode 
+              ? 'bg-gradient-to-br from-yellow-400 to-orange-500 hover:shadow-yellow-500/50' 
+              : 'bg-gradient-to-br from-gray-800 to-gray-900 hover:shadow-gray-700/50'
+          }`}
+        >
+          {darkMode ? (
+            <Sun className="w-5 h-5 text-white" />
+          ) : (
+            <Moon className="w-5 h-5 text-white" />
+          )}
+        </motion.button>
 
         {/* Info Card */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-6 bg-white/50 backdrop-blur-sm rounded-lg p-4 text-center border border-gray-200"
+          className={`mt-6 backdrop-blur-sm rounded-lg p-4 text-center border transition-colors duration-300 ${
+            darkMode 
+              ? 'bg-gray-800/50 border-gray-700' 
+              : 'bg-white/50 border-gray-200'
+          }`}
         >
-          <p className="text-sm text-gray-600">
-            🔒 Credenciales configuradas en el preset de <strong>{config.industry}</strong>
+          <p className={`text-sm transition-colors duration-300 ${
+            darkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            &#x1F512; Credenciales configuradas en el preset de <strong>{config.industry}</strong>
           </p>
         </motion.div>
       </motion.div>

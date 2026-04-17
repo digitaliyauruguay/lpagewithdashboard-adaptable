@@ -21,21 +21,35 @@ const useScrollEffects = () => {
   return { scrollYProgress, scale, opacity };
 };
 
-// Componente de partículas de fondo
+// Componente de partículas de fondo optimizado para mobile
 const BackgroundParticles = ({ density = 30 }) => {
   const [particles, setParticles] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
   
   useEffect(() => {
-    const particles = Array.from({ length: density }, (_, i) => ({
+    // Detectar si es mobile
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Reducir densidad en mobile
+    const mobileDensity = isMobile ? Math.floor(density / 3) : density;
+    const particles = Array.from({ length: mobileDensity }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 15 + 10,
-      delay: Math.random() * 5
+      size: Math.random() * 2 + 1, // Más pequeñas en mobile
+      duration: Math.random() * 10 + 8, // Animaciones más rápidas
+      delay: Math.random() * 3
     }));
     setParticles(particles);
-  }, [density]);
+  }, [density, isMobile]);
+
+  // No renderizar partículas en mobile para mejor rendimiento
+  if (isMobile) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -50,9 +64,9 @@ const BackgroundParticles = ({ density = 30 }) => {
             top: `${particle.y}%`,
           }}
           animate={{
-            y: [0, -30, 0],
-            opacity: [0.3, 1, 0.3],
-            scale: [1, 1.2, 1]
+            y: [0, -20, 0], // Menos movimiento
+            opacity: [0.3, 0.8, 0.3], // Menos opacidad
+            scale: [1, 1.1, 1] // Menos escala
           }}
           transition={{
             duration: particle.duration,
@@ -134,26 +148,34 @@ export default function ProductionReadyVetGrooming() {
     }
   }, [darkMode]);
 
-  // Scroll tracking
+  // Scroll tracking optimizado con debounce
   useEffect(() => {
+    let timeoutId = null;
     const handleScroll = () => {
-      const sections = ['inicio', 'servicios', 'testimonios', 'contacto'];
-      const scrollPosition = window.scrollY + 100;
+      // Debounce para mejor rendimiento
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        const sections = ['inicio', 'servicios', 'testimonios', 'contacto'];
+        const scrollPosition = window.scrollY + 100;
 
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setCurrentSection(section);
-            break;
+        for (const section of sections) {
+          const element = document.getElementById(section);
+          if (element) {
+            const { offsetTop, offsetHeight } = element;
+            if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+              setCurrentSection(section);
+              break;
+            }
           }
         }
-      }
+      }, 16); // ~60fps
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   // Validación de formulario
@@ -648,10 +670,14 @@ export default function ProductionReadyVetGrooming() {
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.05, y: -3, borderColor: '#9333ea' }}
+                whileHover={{ scale: 1.05, y: -3 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth' })}
-                className="px-8 py-4 bg-white text-gray-900 font-bold rounded-full border-2 border-gray-300 hover:border-purple-600 transition-all shadow-lg"
+                className={`px-8 py-4 font-bold rounded-full border-2 transition-all shadow-lg ${
+                  darkMode
+                    ? 'bg-gray-800 text-white border-gray-600 hover:border-purple-400 hover:bg-gray-700'
+                    : 'bg-white text-gray-900 border-gray-300 hover:border-purple-600'
+                }`}
               >
                 <span className="flex items-center gap-3">
                   <Stethoscope className="w-5 h-5" />
